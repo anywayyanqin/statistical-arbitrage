@@ -9,20 +9,20 @@
   ];
   const CONTRACTS=INSTRUMENTS.flatMap(i=>['2601','2605','2609'].map(month=>({symbol:`${i.symbol}${month}`,name:`${i.name}${month}`,variety:i.symbol,category:i.category})));
   const PAIRS=[
-    {id:'ru-nr',name:'RU–NR',legA:'天然橡胶',legB:'20号胶',symbolA:'RU',symbolB:'NR',category:'橡胶产业链',note:'观察两类橡胶的相对价格变化',formula:'RU − 1.00 × NR',beta:1,color:'#0059EC',seed:17,phi:.955,vol:.34,cycle:73,recommended:true},
-    {id:'rb-hc',name:'RB–HC',legA:'螺纹钢',legB:'热轧卷板',symbolA:'RB',symbolB:'HC',category:'黑色产业链',note:'观察长材与板材的相对强弱',formula:'RB − 1.00 × HC',beta:1,color:'#FF8600',seed:43,phi:.972,vol:.27,cycle:112,recommended:true},
-    {id:'m-rm',name:'豆粕–菜粕',legA:'豆粕',legB:'菜籽粕',symbolA:'M',symbolB:'RM',category:'蛋白粕',note:'观察蛋白粕之间的替代关系',formula:'M − 1.00 × RM',beta:1,color:'#05B96A',seed:89,phi:.94,vol:.42,cycle:55,recommended:true},
-    {id:'ta-ma',name:'TA–MA',legA:'PTA',legB:'甲醇',symbolA:'TA',symbolB:'MA',category:'化工品',note:'观察化工链相关品种的相对强弱',formula:'TA − 1.00 × MA',beta:1,color:'#805AD5',seed:112,phi:.962,vol:.31,cycle:88,recommended:true},
-    {id:'cu-al',name:'CU–AL',legA:'沪铜',legB:'沪铝',symbolA:'CU',symbolB:'AL',category:'有色金属',note:'观察有色板块相对价格变化',formula:'CU − 1.00 × AL',beta:1,color:'#00A3A3',seed:136,phi:.968,vol:.29,cycle:96,recommended:true},
-    {id:'j-jm',name:'J–JM',legA:'焦炭',legB:'焦煤',symbolA:'J',symbolB:'JM',category:'煤焦产业链',note:'观察焦化利润相关价差变化',formula:'J − 1.00 × JM',beta:1,color:'#9A6700',seed:151,phi:.95,vol:.38,cycle:68,recommended:true}
+    {id:'ru-nr',name:'RU–NR',legA:'天然橡胶',legB:'20号胶',symbolA:'RU',symbolB:'NR',category:'橡胶产业链',note:'观察两类橡胶的相对价格变化',formula:'RU − NR',beta:1,showCoefficient:false,color:'#0059EC',seed:17,phi:.955,vol:.34,cycle:73,recommended:true},
+    {id:'rb-hc',name:'RB–HC',legA:'螺纹钢',legB:'热轧卷板',symbolA:'RB',symbolB:'HC',category:'黑色产业链',note:'观察长材与板材的相对强弱',formula:'RB − HC',beta:1,showCoefficient:false,color:'#FF8600',seed:43,phi:.972,vol:.27,cycle:112,recommended:true},
+    {id:'m-rm',name:'M–RM',legA:'豆粕',legB:'菜籽粕',symbolA:'M',symbolB:'RM',category:'蛋白粕',note:'观察蛋白粕之间的替代关系',formula:'M − RM',beta:1,showCoefficient:false,color:'#05B96A',seed:89,phi:.94,vol:.42,cycle:55,recommended:true},
+    {id:'ta-ma',name:'TA–MA',legA:'PTA',legB:'甲醇',symbolA:'TA',symbolB:'MA',category:'化工品',note:'观察化工链相关品种的相对强弱',formula:'TA − MA',beta:1,showCoefficient:false,color:'#805AD5',seed:112,phi:.962,vol:.31,cycle:88,recommended:true},
+    {id:'cu-al',name:'CU–AL',legA:'沪铜',legB:'沪铝',symbolA:'CU',symbolB:'AL',category:'有色金属',note:'观察有色板块相对价格变化',formula:'CU − AL',beta:1,showCoefficient:false,color:'#00A3A3',seed:136,phi:.968,vol:.29,cycle:96,recommended:true},
+    {id:'j-jm',name:'J–JM',legA:'焦炭',legB:'焦煤',symbolA:'J',symbolB:'JM',category:'煤焦产业链',note:'观察焦化利润相关价差变化',formula:'J − JM',beta:1,showCoefficient:false,color:'#9A6700',seed:151,phi:.95,vol:.38,cycle:68,recommended:true}
   ];
   const palette=['#0059EC','#FF8600','#805AD5','#00A3A3','#9A6700','#667085'];
-  function addCustomPair(symbolA,symbolB,operator='−'){
+  function addCustomPair(symbolA,symbolB,operator='−',beta=1,showCoefficient=false){
     if(symbolA===symbolB)throw new Error('请选择两个不同品种');
     const a=CONTRACTS.find(x=>x.symbol===symbolA)||INSTRUMENTS.find(x=>x.symbol===symbolA),b=CONTRACTS.find(x=>x.symbol===symbolB)||INSTRUMENTS.find(x=>x.symbol===symbolB);if(!a||!b)throw new Error('合约不存在');
-    if(operator==='−'){const sameLegs=PAIRS.find(x=>x.symbolA===symbolA&&x.symbolB===symbolB);if(sameLegs)return sameLegs}
-    const opKey={'+':'plus','−':'minus','×':'times','÷':'divide'}[operator]||'minus',id=`custom-${symbolA.toLowerCase()}-${opKey}-${symbolB.toLowerCase()}`,existing=PAIRS.find(x=>x.id===id);if(existing)return existing;
-    const seed=[...`${symbolA}${operator}${symbolB}`].reduce((n,c)=>n+c.charCodeAt(0),0),p={id,name:`${symbolA}${operator}${symbolB}`,legA:a.name,legB:b.name,symbolA,symbolB,operator,category:'自由组合',note:'客户临时创建的合约表达式',formula:`${symbolA} ${operator} ${symbolB}`,beta:1,color:palette[PAIRS.length%palette.length],seed,phi:.95+(seed%20)/1000,vol:.28+(seed%14)/100,cycle:60+seed%55,recommended:false};PAIRS.push(p);return p;
+    if(operator==='−'&&!showCoefficient){const sameLegs=PAIRS.find(x=>x.symbolA===symbolA&&x.symbolB===symbolB&&!x.showCoefficient);if(sameLegs)return sameLegs}
+    const opKey={'+':'plus','−':'minus','×':'times','÷':'divide'}[operator]||'minus',coefKey=showCoefficient?`-${String(beta).replace('.','_')}`:'',id=`custom-${symbolA.toLowerCase()}-${opKey}${coefKey}-${symbolB.toLowerCase()}`,existing=PAIRS.find(x=>x.id===id);if(existing)return existing;
+    const coefficient=showCoefficient?Number(beta):1,displayName=`${symbolA}${operator}${showCoefficient?coefficient.toFixed(2)+'×':''}${symbolB}`,formula=`${symbolA} ${operator}${showCoefficient?` ${coefficient.toFixed(2)} ×`:''} ${symbolB}`,seed=[...`${symbolA}${operator}${coefficient}${symbolB}`].reduce((n,c)=>n+c.charCodeAt(0),0),p={id,name:displayName,legA:a.name,legB:b.name,symbolA,symbolB,operator,category:'自由组合',note:'客户临时创建的合约表达式',formula,beta:coefficient,showCoefficient,color:palette[PAIRS.length%palette.length],seed,phi:.95+(seed%20)/1000,vol:.28+(seed%14)/100,cycle:60+seed%55,recommended:false};PAIRS.push(p);return p;
   }
   function rng(seed){let s=seed>>>0;return()=>((s=(s*1664525+1013904223)>>>0)/4294967296)}
   function dateStr(d){return d.toISOString().slice(0,10)}

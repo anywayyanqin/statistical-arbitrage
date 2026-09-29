@@ -1,144 +1,90 @@
-# Design QA — 回测配置条
+# Design QA
 
-- Source visual truth: `/var/folders/jb/bdl4dk916f5bltlk2_5m4kyr0000gn/T/codex-clipboard-540b73cb-471d-4486-bece-8b7df5f23f3b.png`
-- Implementation screenshot: `/Users/wangyanqin/WangYanQin/1. 机构客户服务平台/1. 产品内容-机构/44.4-统计套利合约/implementation-config.png`
-- Focused implementation evidence: `/Users/wangyanqin/WangYanQin/1. 机构客户服务平台/1. 产品内容-机构/44.4-统计套利合约/implementation-config-focus.png`
-- Browser viewport / implementation pixels: 1406 × 791 CSS px at device scale 1; screenshot 1406 × 791 px.
-- Source pixels: 2192 × 224 px. The source is a cropped, wider configuration strip, so comparison was normalized by component structure and the focused configuration region rather than by full-page scale.
-- State: 3 recommended pairs selected; default dates; 95% entry; 50% exit; 3% drawdown; ratio-forward adjustment. Interaction test also covered custom-entry mode, adjustment selection, and a completed three-pair backtest.
+- Source visual truth: `/var/folders/3f/7q9w80_d6mlgjr4_ykxp4wm40000gn/T/codex-clipboard-3457f046-b032-4fa4-9961-520b6dcc033e.png`, `/var/folders/3f/7q9w80_d6mlgjr4_ykxp4wm40000gn/T/codex-clipboard-ae793451-f178-4259-8a27-784717f88431.png`, configuration-toolbar reference `/var/folders/3f/7q9w80_d6mlgjr4_ykxp4wm40000gn/T/codex-clipboard-7f1c5044-f19b-4a41-9559-506ea6780059.png`, and linked trade-list reference `/var/folders/3f/7q9w80_d6mlgjr4_ykxp4wm40000gn/T/codex-clipboard-16190637-b2fe-40bc-a620-25b299941779.png`
+- Implementation screenshot: final in-app browser capture of `http://localhost:8000/?qa=remove-signal` (captured during final QA; browser-managed screenshot was not exported to disk)
+- Viewport: 1080 × 719 CSS px, desktop
+- Source pixels: 2875 × 1433, 2867 × 1454, focused toolbar crop 2679 × 618, and linked-trade reference 2770 × 1447; normalized by fitting the desktop composition into the implementation viewport and comparing toolbar/trade regions separately
+- Implementation pixels: 1080 × 719 at the in-app browser's native density
+- State: RU–NR selected, 1Y range, expanded combination sidebar, default editable configuration applied; latest responsive QA captured with `价差带` active after both splitters were dragged
 
 ## Full-view comparison evidence
 
-The final page keeps the reference strip above the sidebar/results workspace. All seven control groups are visible without horizontal overflow, and the sidebar remains the single source of truth for multi-pair selection.
+The implementation preserves the reference's dominant hierarchy: compact top command bar, large chart-first upper region, and a bordered strategy tester below. The requested project-specific adaptation is present: the left side is a searchable arbitrage-combination library with collapse/expand behavior; the right side is the candlestick chart; the lower region combines key performance metrics, equity/drawdown, recent B/S signals, and a full trade table tab.
 
-## Focused-region comparison evidence
+The implementation intentionally omits TradingView's global drawing and utility side rails because they are not part of the statistical-arbitrage workflow. This gives the main chart the same visual priority without copying unrelated product chrome.
 
-The focused capture verifies the reference hierarchy and order: pair selection, combined date range, segmented entry control, segmented exit control, drawdown, adjustment, and blue primary action. Labels, 40px control height, pale borders, compact spacing, and the selected blue segment follow the supplied visual.
+## Focused region comparison evidence
 
-## Findings
-
-- No actionable P0/P1/P2 differences remain for the requested configuration interaction.
-- P3: Native browser date fields use platform calendar glyphs rather than the exact calendar icon in the reference; this is acceptable for the current prototype and preserves keyboard/date-picker behavior.
-- P3: The pair selector displays “已选 3 个组合” because the product supports multi-pair comparison, while the reference shows one pair. This is an intentional product adaptation.
-
-## Comparison history
-
-1. First rendered comparison found a P2 horizontal overflow and clipped control content because the reference strip was placed inside the narrower results column beside the 300px sidebar.
-2. Fix: moved the configuration card above the sidebar/results workspace, expanded its desktop grid, and kept responsive two-column/one-column fallbacks.
-3. Post-fix evidence: `implementation-config.png` and `implementation-config-focus.png` show the full strip without clipping or horizontal overflow.
+- Upper chart: candle density, fine grid, right price scale, period selector, instrument header, and B/S markers match the reference's trading-workspace rhythm.
+- Lower tester: tabbed header, parameter strip, large numeric metrics, chart/table modes, compact row density, and semantic green/red states follow the reference.
+- Configuration toolbar: editable date range, capital, strategy preset, direction, cost, and adjustment controls now sit above the performance/trade tabs, matching the reference hierarchy.
+- Linked trades: each transaction is grouped into a close/current-position row and an entry row, with direction, date, spread value, holding period, return, PnL, and cumulative NAV aligned in TV-like columns.
+- Chart linkage: the chart shows only circular `B` / `S` action points. A directional arrow connects each opening action to its closing action, hover exposes a compact trade tooltip, and clicking a point opens and highlights the corresponding table group.
+- Status filtering: the table's status header is an inline selector with `全部状态 / 开仓 / 平仓`; filtered views retain the same linked-trade behavior and TV-like density.
+- Left library: designed as the requested project-specific addition; selection, search, and collapse states were tested in the browser.
+- Single-screen workspace: at the 1082 × 719 laptop viewport, the full chart, configuration row, performance tabs, metric summary, and the beginning of the performance chart remain inside the viewport with no document scroll.
+- Resizable regions: a TV-like horizontal splitter adjusts chart/tester height, and a vertical splitter adjusts the combination-library/chart width; canvases redraw continuously after either change.
+- Spread band: the active `价差带` view renders a visible MA20 centerline, dashed ±2σ boundaries, and a translucent band while preserving candles and B/S linking.
 
 ## Required fidelity surfaces
 
-- Typography: existing institutional UI font stack, 13px labels, compact 11–12px control text; hierarchy is consistent and readable.
-- Spacing/layout: configuration card is full-width, 12px desktop gaps, 40px controls, aligned baselines, and responsive fallbacks.
-- Colors/tokens: existing brand blue, neutral borders/backgrounds, and semantic focus treatment are reused.
-- Image/assets: the source contains no product imagery; native calendar/select affordances are used, with no placeholder assets.
-- Copy/content: labels and defaults match the reference; the multi-pair summary is intentionally adapted to the current comparison workflow.
+- Fonts and typography: system UI stack matches the neutral TradingView-like tone; hierarchy, small labels, numeric metrics, and dense table copy remain readable at the tested viewport.
+- Spacing and layout rhythm: 6 px workspace gutters, fine panel dividers, 54 px top bar, chart-first proportions, and compact controls are consistent across regions.
+- Colors and visual tokens: white panels, cool gray canvas, fine gray rules, blue selected states, green gains/buys, and red losses/sells map cleanly to the source visual language.
+- Image quality and asset fidelity: the reference contains no product imagery requiring raster assets. Charts are rendered sharply at device pixel density; no placeholder imagery is used.
+- Copy and content: all labels are adapted to Chinese statistical-arbitrage terminology and use the project's real pair names and mock-backtest output.
 
-## Verification
+## Findings
 
-- JavaScript syntax check passed.
-- Custom signal mode toggled successfully.
-- Adjustment selection updated successfully.
-- Three-pair backtest completed and rendered results/charts.
-- Browser console had no errors or warnings.
+No actionable P0/P1/P2 visual or interaction mismatches remain for the requested adaptation.
 
-## 2026-09-24 annotation iteration
+## Interaction and technical checks
 
-- Additional source visual truth: `/var/folders/jb/bdl4dk916f5bltlk2_5m4kyr0000gn/T/codex-clipboard-a43e500e-e33e-41ca-a1c9-3c0f9a1daa51.png` (2560 × 1600 px), especially the two-panel price/spread chart.
-- Revised implementation screenshot: `/Users/wangyanqin/WangYanQin/1. 机构客户服务平台/1. 产品内容-机构/44.4-统计套利合约/implementation-spread-chart.png` (1406 × 791 px, CSS viewport 1406 × 791, device scale 1).
-- State: CU2601 and RU2605 entered through the searchable contract inputs, added as a custom spread, four-pair backtest completed, market chart visible.
+- Sidebar collapse and expand: passed.
+- Combination switching with synchronized chart and tester data: passed.
+- Range switching: passed.
+- Performance / B/S trade tracking tabs: passed.
+- Backtest rerun control: passed.
+- Editable configuration dirty state and apply flow: passed; changing the start date updates the status to `配置待应用`, and applying it recalculates the strategy output.
+- B/S-only marker rendering and directional holding-period arrow: passed.
+- Status selector: `开仓` passed with 13 entry rows; `平仓` passed with 12 closed-trade rows and correctly excludes the current open position.
+- Chart marker click to BS tab, scroll, and selected-row highlight: passed with trade 13.
+- Trade-row hover/click back to chart highlight: passed.
+- Horizontal chart/tester resize: passed by dragging the divider upward at 1082 × 719.
+- Vertical library/chart resize: passed by narrowing the left library; chart and band reflowed correctly.
+- `K线 / 价差带` view switching: passed; the final QA state is `价差带`.
+- Browser console errors and warnings: none.
 
-### Findings and fixes
+## Comparison history
 
-1. P2 — Free-combination controls were fixed selects and repeated the created combination as another sidebar row. Fixed by using searchable contract comboboxes and keeping created combinations only in the results/inspector.
-2. P2 — Recommended rows repeated “已选 / 查看” even though the checkbox and focus treatment already conveyed state. Removed the redundant label.
-3. P1 — The comparison flow lacked the source design's underlying-contract and synthesized-spread view. Added a switchable two-panel chart with leg prices, spread, rolling mean, and ±2σ bands.
-4. Post-fix visual evidence shows readable line separation, aligned two-panel axes, a compact legend, and no horizontal overflow at the tested desktop viewport.
+- Initial implementation pass: the lower tester used a static parameter summary and an unnecessary pair-specific title.
+- Annotation iteration: removed the title, promoted the configuration toolbar above the tabs, replaced static text with editable native controls, and added pending/applied/running states.
+- Post-fix evidence: final in-app browser capture at 1080 × 719 shows the toolbar above `绩效概览 / BS 买卖点跟踪`; all controls fit without clipping and the browser console contains no errors or warnings.
+- Linked-trade iteration: replaced one-line trade summaries with paired entry/exit rows, added chart markers and holding connectors, and implemented bidirectional hover/click linking.
+- Linked-trade post-fix evidence: clicking the visible rightmost `B开` marker switched to `BS 买卖点跟踪`, scrolled to trade 13, and highlighted its paired rows; console remained free of errors and warnings.
+- B/S annotation iteration: replaced `B开 / S开 / 平` labels with action-only circular `B / S` points, made closing points use the opposite action, and added an arrowhead to every completed holding connector. Added the status-header selector for all/open/close views.
+- B/S post-fix evidence: final 1080 × 719 browser capture shows circular B/S points without phase text, the selected trade's solid blue directional arrow, and `全部状态` in the table header. Browser interaction verified `开仓` and `平仓` filtered views; console errors and warnings remained empty.
+- Laptop-layout iteration: the previous minimum row heights forced the workspace beyond a short laptop viewport and the chart buttons were static. Replaced the fixed minimums with a bounded single-screen grid, added horizontal/vertical splitters, compacted controls below 800 px viewport height, and implemented chart-layer state.
+- Laptop-layout post-fix evidence: the final 1082 × 719 in-app browser capture contains both main modules without page overflow. The screenshot after dragging shows a narrower library, a taller tester, and the Bollinger-style spread band redrawn across the resized chart. `K线`, `价差带`, and `指标` switching produced no console errors or warnings.
+- Toolbar annotation iteration: removed the unused `指标` control from the visible chart toolbar and limited chart-mode binding to `K线` and `价差带`, preserving the compact two-mode layout requested by the annotation.
+- Pair-list annotation iteration: changed the library label to `推荐套利对`, kept the concrete pair names as the primary content, removed the secondary formula/industry annotations from each row, and shortened `BS 买卖点跟踪` to `BS点`.
+- Pair-name annotation iteration: changed the recommended soybean-meal / rapeseed-meal pair label from `豆粕–菜粕` to the concrete English contract-code label `M–RM`.
+- Performance-panel annotation iteration: removed the compact `最近 BS 信号` side panel from the performance view and expanded the cumulative-return chart across the full lower width; detailed BS tracking remains available in `BS点`.
+- Performance-panel post-fix evidence: clean in-app browser capture shows the lower performance chart spanning the full width with no `最近 BS 信号` panel; clicking `BS点` still renders the linked-trade table and browser logs remain empty.
+- Custom-spread annotation iteration: restored the compact builder below the pair search with two contract selectors and `+ / − / × / ÷` operator buttons. The `创建价差对` action calls the existing custom-pair model, adds the new pair to the library, and switches the chart to it.
+- Custom-spread post-fix evidence: browser interaction created `M+RM`, the pair appeared in the list, the chart title switched to `M+RM价差`, and console errors/warnings remained empty.
+- Direct-input custom-spread iteration: replaced the two select menus with TV-like editable symbol inputs, focused autocomplete suggestions, a live expression preview, clickable `+ / − / × / ÷` controls, and Enter-to-generate behavior.
+- Direct-input post-fix evidence: at the current 1435 × 719 in-app browser viewport, typing `M` opened matching instrument suggestions, clicking `+` updated the preview to `M + NR`, and generating created `M+NR`, added it to the library, and switched the chart. Browser console errors/warnings remained empty.
+- Navigation recovery iteration: restored the top-level `回测记录` route using the existing localStorage run schema, persisted current workbench backtests, and added `查看结果` / `载入参数` actions without removing the new chart workspace.
+- Navigation recovery post-fix evidence: clicking `回测记录` opened the record table with persisted local runs; `查看结果` returned to the workbench with the saved RU–NR snapshot; browser console errors/warnings remained empty.
+- Single-expression custom-spread iteration: removed the separate leg inputs and replaced them with one TV-like expression search field. Users can type symbols or contract codes, select autocomplete results, click inline `+ / − / × / ÷` insertion buttons, clear the expression, and press Enter to generate.
+- Single-expression post-fix evidence: cleared the field, entered `M`, clicked `+`, entered `RM`, confirmed the live preview `M + RM`, generated the pair, and verified `M+RM` appeared in the library and became the active chart. Browser console errors/warnings remained empty.
+- Unified-expression annotation iteration: removed the standalone pair search and live preview row. The single TV-like field now searches existing arbitrage pairs and instruments, supports inline operators, opens an existing pair when selected or confirmed, and creates a new pair when the expression is valid.
+- Unified-expression post-fix evidence: `RU` displayed existing pair candidates; pressing Enter on `TA` opened `TA–MA`; `M+RM` and `RU−1.20×HC` generated custom pairs, with the latter retaining `1.20 ×` in the chart subtitle. Recommended `RU–NR` omitted the coefficient consistently, the `指标` toolbar button was absent, and static checks passed with no browser console errors observed.
 
-### Fidelity surfaces
+## Follow-up polish
 
-- Typography: uses the existing institutional font hierarchy; chart labels and legends remain legible without competing with result metrics.
-- Spacing/layout: the chart is placed between the result table and return comparison, preserving the page's analysis sequence.
-- Colors/tokens: blue/orange leg lines, blue spread line, neutral mean, red upper band, and green lower band match the reference semantics.
-- Image quality: no raster assets are required; data lines remain vector-sharp at the tested viewport.
-- Copy/content: contract codes, Chinese names, formula, rolling mean, and ±2σ labels are explicit.
-
-### Verification
-
-- JavaScript syntax checks passed for `app.js` and `mock-data.js`.
-- Fuzzy matching accepted partial Chinese names and specific contract codes.
-- CU2601–RU2605 was added without a duplicate sidebar row.
-- Four-combination backtest completed; the market chart and selector rendered.
-- Browser console contained no errors or warnings.
-
-## 2026-09-24 TradingView-style expression iteration
-
-- Source visual truth: Browser Comment 1 additional attachment showing the TradingView symbol-search expression bar (conversation attachment; no local filesystem path exposed).
-- Implementation screenshot: `/Users/wangyanqin/WangYanQin/1. 机构客户服务平台/1. 产品内容-机构/44.4-统计套利合约/implementation-expression-builder.png` (1406 × 791 px, CSS viewport 1406 × 791, device scale 1).
-- State: search dropdown opened with “沪铜”; CU2601 selected; minus operator added; RU2601 selected; expression added to comparison.
-
-### Findings and fixes
-
-1. P2 — The earlier two-field builder required users to mentally map left and right legs. Replaced it with one expression field.
-2. P2 — Contract search and arithmetic composition were separate concepts. The revised control keeps search, clear, and `÷ − + ×` actions together like the reference.
-3. Post-fix evidence shows a compact three-row builder in the 300px sidebar, a readable dropdown, hover/focus affordances, and no overlap with the inspector below.
-
-### Fidelity surfaces
-
-- Typography: contract code is emphasized; Chinese contract name and market category are secondary.
-- Spacing/layout: search bar and operator strip share a single framed control, with the primary “加入对比” action below.
-- Colors/tokens: white fields, neutral borders, and brand-blue focus states reuse the institutional tokens.
-- Image/assets: no imagery is required; the control uses native text and interaction elements.
-- Copy/content: supports contract code/name search, clear action, four arithmetic operators, validation, and expression persistence.
-
-### Verification
-
-- Search by Chinese name returned CU2601/CU2605/CU2609.
-- Contract selection, operator insertion, second-contract selection, and addition to comparison all passed.
-- `CU2601 − RU2601` persisted in the field and inspector formula.
-- JavaScript syntax checks passed; browser console contained no errors or warnings.
-
-## 2026-09-24 Risk, frequency, and execution controls iteration
-
-- Implementation screenshot: `/Users/wangyanqin/WangYanQin/1. 机构客户服务平台/1. 产品内容-机构/44.4-统计套利合约/implementation-risk-controls.png`.
-- Source of truth: Browser Comments 1–7 in the current task.
-
-### Findings and fixes
-
-1. P1 — Custom entry and exit values incorrectly retained a percent suffix. The suffix now appears only in quantile mode; custom mode accepts an absolute spread value.
-2. P1 — Recommended combinations did not expose executable contract detail. Rows now show concrete contract codes and the synthesized-spread formula.
-3. P2 — The market chart could not change sampling frequency or review horizon. Added daily/minute display controls and 1/3/6/12-month/all lookbacks.
-4. P1 — Risk and execution assumptions were incomplete. Added drawdown, volatility, capital allocation, daily order-time, minute interval, and per-combination capital controls.
-5. P2 — Adjustment choices covered only one direction. Added forward- and backward-adjusted ratio/difference options plus unadjusted data.
-
-### Verification
-
-- `node --check app.js` and `node --check mock-data.js` passed.
-- Reloaded the full page and verified the default view, comparison table, contract/spread chart, and return comparison render together.
-- Custom-value mode hides the percent suffix; quantile mode retains it.
-- Frequency-dependent execution controls switch between daily order time and minute interval.
-- The market chart accepts frequency and lookback changes; minute data is explicitly marked as demo aggregation.
-- No page-breaking browser errors were observed during the final reload.
-
-final result: passed
-
-## 2026-09-29 NAV baseline field removal
-
-- Removed the visible `1.0000` NAV baseline field from the execution controls at the user's request.
-- Kept the internal simulation baseline at NAV 1.0, while removing the implementation detail from the result snapshot copy.
-- Reflowed the execution row to keep frequency, order timing, position, and volatility controls aligned.
-- Verified the live page accessibility tree contains no `净值基准` or `1.0000` control.
-
-final result: passed
-
-## 2026-09-24 Combination and NAV terminology iteration
-
-- Implementation screenshot: `/Users/wangyanqin/WangYanQin/1. 机构客户服务平台/1. 产品内容-机构/44.4-统计套利合约/implementation-sidebar-nav-risk.png`.
-- Verified at the live local page after cache-busted reload.
-- Sidebar selection count is a numeric capsule; recommended rows use main-contract symbols and formulas.
-- The duplicate top combination selector and capital input are removed; normalized NAV starts at `1.0000`.
-- Buy/sell labels and the drawdown full-liquidation help affordance are present.
-- JavaScript syntax checks passed and the default comparison page rendered without breakage.
+- P3: expose the MA window and standard-deviation multiplier as user-editable indicator parameters if the product scope expands.
+- P3: replace the illustrative live quote label with a data-bound latest candle value when a real market feed is introduced.
 
 final result: passed
