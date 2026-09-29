@@ -123,6 +123,15 @@ The focused capture verifies the reference hierarchy and order: pair selection, 
 
 final result: passed
 
+## 2026-09-29 NAV baseline field removal
+
+- Removed the visible `1.0000` NAV baseline field from the execution controls at the user's request.
+- Kept the internal simulation baseline at NAV 1.0, while removing the implementation detail from the result snapshot copy.
+- Reflowed the execution row to keep frequency, order timing, position, and volatility controls aligned.
+- Verified the live page accessibility tree contains no `净值基准` or `1.0000` control.
+
+final result: passed
+
 ## 2026-09-24 Combination and NAV terminology iteration
 
 - Implementation screenshot: `/Users/wangyanqin/WangYanQin/1. 机构客户服务平台/1. 产品内容-机构/44.4-统计套利合约/implementation-sidebar-nav-risk.png`.
